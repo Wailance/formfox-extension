@@ -1,0 +1,9 @@
+"use client";
+import { formatDistance } from "@/lib/geo";
+import { TASK_TYPE_CONFIG } from "@/lib/constants";
+import { QuestTask } from "@/lib/types";
+import QuizInput from "./QuizInput";
+export default function TaskCard({ task, isActive, isCompleted, distanceMeters, isWithinRadius, onComplete, onPhotoCapture, onQuizAnswer }: { task: QuestTask; isActive: boolean; isCompleted: boolean; distanceMeters: number | null; isWithinRadius: boolean; onComplete: () => void; onPhotoCapture: () => void; onQuizAnswer: (answer: string) => void; }) {
+  const cfg = TASK_TYPE_CONFIG[task.type];
+  return <div className={`glass-card ${!isActive && !isCompleted ? "opacity-60" : ""} ${isCompleted ? "opacity-70 line-through" : ""}`}><div className="mb-2 flex items-center justify-between"><span className="rounded-full px-2 py-1 text-xs" style={{ backgroundColor: `${cfg.color}33` }}>{cfg.emoji} {cfg.label}</span><span className="rounded-full bg-slate-700 px-2 py-1 text-xs">+{task.xp_reward} XP</span></div><h3 className="font-semibold">{task.title}</h3><p className="mt-1 text-sm text-slate-300">{task.description}</p><details className="mt-2 text-sm text-slate-400"><summary>Сюжет</summary><p className="italic">{task.narrative}</p></details>{distanceMeters !== null && isActive && <p className="mt-2 text-sm">📏 {formatDistance(distanceMeters)}</p>}{isActive && !isCompleted && <div className="mt-3">{task.type === "navigate" && <button disabled={!isWithinRadius} onClick={onComplete} className="min-h-12 w-full rounded-lg bg-emerald-500 font-semibold text-slate-950 disabled:opacity-50">✅ Я на месте</button>}{task.type === "photo" && <button onClick={onPhotoCapture} className="min-h-12 w-full rounded-lg bg-violet-500 font-semibold">📷 Сделать фото</button>}{task.type === "quiz" && <QuizInput hint={task.answer_hint} onSubmit={onQuizAnswer} />}</div>}</div>;
+}
